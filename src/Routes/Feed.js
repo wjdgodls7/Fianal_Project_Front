@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { Helmet } from "rl-react-helmet";
 import { gql } from "apollo-boost";
 import { useQuery } from "react-apollo-hooks";
 import Loader from "../Components/Loader";
 import Post from "../Components/Post";
-
 
 const FEED_QUERY = gql`
   {
@@ -58,5 +56,6 @@ export default () => {
         isLiked={post.isLiked}
         comments={post.comments}
         createdAt={post.createdAt}
+        caption={post.caption}
       />)}</Wrapper>;
 };

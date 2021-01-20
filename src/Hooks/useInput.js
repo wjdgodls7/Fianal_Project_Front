@@ -9,5 +9,5 @@ export default (defaultvalue) => {
         } = e;
         setvalue(value);
     };
-    return { value, onChange };
+    return { value, onChange, setvalue };
 };

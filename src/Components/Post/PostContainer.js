@@ -4,6 +4,7 @@ import useInput from "../../Hooks/useInput";
 import PostPresenter from "./PostPresenter";
 import { useMutation } from "react-apollo-hooks";
 import { TOGGLE_LIKE, ADD_COMMENT } from "./PostQueries";
+import { toast } from 'react-toastify';
 
 const PostContainer = ({
     id,
@@ -19,11 +20,12 @@ const PostContainer = ({
     const [isLikedS, setIsLiked] = useState(isLiked);
     const [likeCountS, setLikeCount] = useState(likeCount);
     const [currentItem, setCurrentItem] = useState(0);
+    const [selfComments, setselfComments] = useState([]);
     const comment = useInput("");
     const [toggleLikeMutation] = useMutation(TOGGLE_LIKE, {
         variables: { postId: id }
     });
-    const addCommentMutation = useMutation(ADD_COMMENT, {
+    const [addCommentMutation] = useMutation(ADD_COMMENT, {
         variables: { postId: id, text: comment.value }
     });
     const slide = () => {
@@ -48,6 +50,23 @@ const PostContainer = ({
             setLikeCount(likeCountS + 1);
         }
     };
+    const onKeyPress = async event => {
+        const { which } = event;
+        if (which === 13) {
+            event.preventDefault();
+            try {
+                const {
+                    data: { addComment }
+                } = await addCommentMutation();
+                setselfComments([...selfComments, addComment]);
+                console.log(addComment);
+                comment.setvalue("");
+            } catch (error) {
+                console.log(error)
+                toast.error("댓글을 저장할 수 없습니다.");
+            }
+        }
+    }
 
     return (
         <PostPresenter
@@ -64,6 +83,8 @@ const PostContainer = ({
             setLikeCount={setLikeCount}
             currentItem={currentItem}
             toggleLike={toggleLike}
+            onKeyPress={onKeyPress}
+            selfComments={selfComments}
         />
     );
 };
