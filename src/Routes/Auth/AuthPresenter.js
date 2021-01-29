@@ -54,14 +54,25 @@ export default ({
   email,
   setAction,
   secret,
-  onSubmit
+  onSubmit,
+  password
 }) => (
   <Wrapper>
     <Form>
       {action === "logIn" && (
         <form onSubmit={onSubmit}>
           <Input placeholder={"Email"} {...email} type="email" />
-          <Button text={"Log in"} />
+          <Button text={"Next"} />
+        </form>
+      )}{action === "logIn1" &&(
+        <form onSubmit={onSubmit}>
+          <Input placeholder={"PassWord"}{...password} type="password"/>
+          <Button text={"Log in"}/>
+        </form>
+      )}{action ==="signUp1" &&(
+        <form onSubmit={onSubmit}>
+          <Input {...email} type="email"/>
+          <Button text={"Check email"}/>
         </form>
       )}{ action === 'signUp' && (
         <form onSubmit={onSubmit}>
@@ -69,6 +80,7 @@ export default ({
           <Input placeholder={"Last name"} {...lastName} />
           <Input placeholder={"Email"} {...email} type="email" />
           <Input placeholder={"Username"} {...username} />
+          <Input placeholder={"Password"}{...password} type="password"/>
           <Button text={"Sign up"} />
         </form>
       )}
@@ -83,7 +95,7 @@ export default ({
       {action === "logIn" ? (
         <>
           Don't have an account?{" "}
-          <Link onClick={() => setAction("signUp")}>Sign up</Link>
+          <Link onClick={() => setAction("signUp1")}>Sign up</Link>
         </>
       ) : (
         <>

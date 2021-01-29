@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import AuthPresenter from "./AuthPresenter";
 import useInput from "../../Hooks/useInput";
 import { useMutation } from "react-apollo-hooks";
-import { LOG_IN, CREATE_ACCOUNT, CONFIRM_SECRET, LOG_USER_IN } from "./AuthQueries";
+import { LOG_IN, CREATE_ACCOUNT, CONFIRM_SECRET, LOG_USER_IN, CONFIRM_USER, CHECK_EMAIL } from "./AuthQueries";
 import { toast } from "react-toastify";
+
 
 export default () => {
     const [action, setAction] = useState("logIn");
@@ -12,15 +13,26 @@ export default () => {
     const secret = useInput("");
     const lastName = useInput("");
     const email = useInput("");
+    const password = useInput("");
     const [requestSecretMutation] = useMutation(LOG_IN, {
         variables: { email: email.value }
     });
+
+    const [confirmUserMutation] = useMutation(CONFIRM_USER, {
+        variables: {
+            email: email.value,
+            password: password.value
+        }
+    });
+
+
     const [createAccountMutation] = useMutation(CREATE_ACCOUNT, {
         variables: {
             email: email.value,
             username: username.value,
             firstName: firstName.value,
-            lastName: lastName.value
+            lastName: lastName.value,
+            password: password.value
         }
     });
 
@@ -31,34 +43,64 @@ export default () => {
         }
     });
 
-    const [logUserInMutation] = useMutation(LOG_USER_IN)
+    const [logUserInMutation] = useMutation(LOG_USER_IN);
+
+    const [checkemailQuery] = useMutation(CHECK_EMAIL, {
+        variables: {
+            email: email.value
+        }
+    });
 
     const onSubmit = async e => {
         e.preventDefault();
         if (action === "logIn") {
             if (email.value !== "") {
                 try {
-                    const { data: { requestSecret } } = await requestSecretMutation();
-                    if (!requestSecret) {
-
+                    const { data: { checkemail } } = await checkemailQuery();
+                    console.log(checkemail);
+                    if (!checkemail) {
                         toast.error("Woops!, 등록된 정보가 없어요! 회원가입으로 안내해 드릴게요!");
-                        setTimeout(() => setAction("signUp"), 3000);
+                        setTimeout(() => setAction("signUp1"), 3000);
                     } else {
-                        toast.success('이메일함에서 시크릿 코드를 확인해주세요!')
-                        setAction('confirm');
+                        toast.success('비밀번호를 입력해주세요!')
+                        setAction('logIn1');
                     }
-                } catch {
+                } catch (e) {
+                    console.log(e);
                     toast.error("Woops!, 다시 시도해주세요!");
                 }
             } else {
                 toast.error("이메일은 반드시 작성해야해요!");
+            }
+        } else if (action === "logIn1") {
+            if (password.value !== "") {
+                const { data: { confirmUser } } = await confirmUserMutation();
+                console.log(confirmUser);
+            }
+            else {
+                toast.error("비밀번호를 입력해주세요")
+            }
+        } else if (action === "signUp1") {
+            if (email.value !== "") {
+                try {
+                    const { data: { requestSecret } } = await requestSecretMutation();
+                    if (!requestSecret) {
+                        toast.error("다시 시도 해주세요")
+                    } else {
+                        toast.success('이메일함에서 시크릿 코드를 확인해주세요')
+                        setAction('confirm')
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
             }
         } else if (action === "signUp") {
             if (
                 email.value !== "" &&
                 username.value !== "" &&
                 firstName.value !== "" &&
-                lastName.value !== ""
+                lastName.value !== "" &&
+                password.value !== ""
             ) {
                 try {
                     const { data: { createAccount } } = await createAccountMutation();
@@ -78,8 +120,9 @@ export default () => {
             if (secret.value !== "") {
                 try {
                     const { data: { confirmSecret: token } } = await confirmSecretMutation();
+                    console.log("토큰은 :" + token);
                     if (token !== "" && token !== undefined) {
-                        await logUserInMutation({ variables: { token } });
+                        setAction('signUp');
                     } else {
                         console.log(token)
                         throw Error();
@@ -99,6 +142,7 @@ export default () => {
             username={username}
             firstName={firstName}
             lastName={lastName}
+            password={password}
             email={email}
             secret={secret}
             onSubmit={onSubmit}

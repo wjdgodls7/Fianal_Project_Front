@@ -9,6 +9,7 @@ export const LOG_IN = gql`
 export const CREATE_ACCOUNT = gql`
   mutation createAccount(
     $username: String!
+    $password: String!
     $email: String!
     $firstName: String
     $lastName: String
@@ -16,6 +17,7 @@ export const CREATE_ACCOUNT = gql`
     createAccount(
       username: $username
       email: $email
+      password: $password
       firstName: $firstName
       lastName: $lastName
     )
@@ -37,3 +39,16 @@ export const LOG_USER_IN = gql`
     logUserIn (token:$token) @client
   } 
 `;
+
+export const CONFIRM_USER = gql`
+mutation confirmUser($email:String!, $password : String!){
+  confirmUser(email:$email password: $password)
+}
+
+`
+
+export const CHECK_EMAIL = gql`
+mutation checkemail($email:String!){
+  checkemail(email:$email)
+}
+`
