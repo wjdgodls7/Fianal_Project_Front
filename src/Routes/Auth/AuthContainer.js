@@ -14,6 +14,25 @@ export default () => {
     const lastName = useInput("");
     const email = useInput("");
     const password = useInput("");
+
+    const responseGoogle = (response) => {
+        email.setvalue(response.profileObj.email);
+        firstName.setvalue(response.profileObj.givenName)
+        lastName.setvalue(response.profileObj.familyName)
+        const [GGusername] = response.profileObj.email.split('@');
+        username.setvalue(GGusername);
+        setAction('signUp');
+    }
+
+    const responseFacebook = async (response) => {
+        console.log(response)
+        email.setvalue(response.email);
+        firstName.setvalue(response.first_name);
+        lastName.setvalue(response.last_name);
+        const [FBusername] = response.email.split('@');
+        username.setvalue(FBusername);
+        setAction('signUp');
+    }
     const [requestSecretMutation] = useMutation(LOG_IN, {
         variables: { email: email.value }
     });
@@ -24,7 +43,6 @@ export default () => {
             password: password.value
         }
     });
-
 
     const [createAccountMutation] = useMutation(CREATE_ACCOUNT, {
         variables: {
@@ -76,16 +94,23 @@ export default () => {
             if (password.value !== "") {
                 const { data: { confirmUser } } = await confirmUserMutation();
                 console.log(confirmUser);
-            }
-            else {
+                if (confirmUser !== "츄라이 츄라이 어게인") {
+                    await logUserInMutation({ variables: { token: confirmUser } });
+                }
+                else {
+                    toast.error("비밀번호가 틀렸습니다 다시 시도해주세요");
+                    setAction('logIn1');
+                }
+            } else {
                 toast.error("비밀번호를 입력해주세요")
+
             }
         } else if (action === "signUp1") {
             if (email.value !== "") {
                 try {
                     const { data: { requestSecret } } = await requestSecretMutation();
                     if (!requestSecret) {
-                        toast.error("다시 시도 해주세요")
+                        toast.error("다시 시도 해주세요/ 이메일이 중복되었습니다")
                     } else {
                         toast.success('이메일함에서 시크릿 코드를 확인해주세요')
                         setAction('confirm')
@@ -119,12 +144,12 @@ export default () => {
         } else if (action === "confirm") {
             if (secret.value !== "") {
                 try {
-                    const { data: { confirmSecret: token } } = await confirmSecretMutation();
-                    console.log("토큰은 :" + token);
-                    if (token !== "" && token !== undefined) {
+                    const { data: { confirmSecret } } = await confirmSecretMutation();
+                    console.log("토큰은 :" + confirmSecret);
+                    if (confirmSecret !== "" && confirmSecret !== undefined) {
                         setAction('signUp');
                     } else {
-                        console.log(token)
+                        console.log(confirmSecret)
                         throw Error();
                     }
                 } catch (error) {
@@ -146,6 +171,9 @@ export default () => {
             email={email}
             secret={secret}
             onSubmit={onSubmit}
+            responseFacebook={responseFacebook}
+            responseGoogle={responseGoogle}
+
         />
     );
 };

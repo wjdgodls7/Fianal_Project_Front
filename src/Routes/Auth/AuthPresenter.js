@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import Input from "../../Components/Input";
 import Button from "../../Components/Button";
+import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+import GoogleLogin from 'react-google-login';
 
 const Wrapper = styled.div`
   min-height: 80vh;
@@ -55,7 +57,9 @@ export default ({
   setAction,
   secret,
   onSubmit,
-  password
+  password,
+  responseFacebook,
+  responseGoogle
 }) => (
   <Wrapper>
     <Form>
@@ -72,7 +76,26 @@ export default ({
       )}{action ==="signUp1" &&(
         <form onSubmit={onSubmit}>
           <Input {...email} type="email"/>
-          <Button text={"Check email"}/>
+          <Button text={"Check email"} />
+          <FacebookLogin
+            appId="950295009072300"
+            autoLoad={false}
+            fields="name,first_name,last_name,email"
+            callback={responseFacebook}
+            render={renderProps => (
+              <Button bgColor={"#2D4DA7"} onClick={renderProps.onClick} text={"This is my custom Facebook button"} />
+            )}
+            
+          />
+          <GoogleLogin
+            clientId="279164621755-f168i4jn1vn7da4t0lkd63hlcaprl0mf.apps.googleusercontent.com"
+            render={renderProps => (
+              <Button bgColor={"#E34133"} onClick={renderProps.onClick} text={"This is my custom Google button"}/>
+            )}
+            buttonText="Login"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+          />
         </form>
       )}{ action === 'signUp' && (
         <form onSubmit={onSubmit}>
