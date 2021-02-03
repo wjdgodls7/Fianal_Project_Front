@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { HeartFull, CommentFull } from "./Icons";
+import { Link } from "react-router-dom";
 
 const Overlay = styled.div`
   background-color: rgba(0, 0, 0, 0.6);
@@ -11,7 +12,7 @@ const Overlay = styled.div`
   justify-content: center;
   align-items: center;
   opacity: 0;
-  transition: opacity 0.3s linear;
+  transition: opacity 0.2s linear;
   svg {
     fill: white;
   }
@@ -28,6 +29,8 @@ const Container = styled.div`
   }
 `;
 
+
+
 const Number = styled.div`
   color: white;
   display: flex;
@@ -42,27 +45,31 @@ const NumberText = styled.span`
   font-size: 16px;
 `;
 
-const SquarePost = ({ likeCount, commentCount, files }) => (
-    <Container bg={files.url}>
+const SquarePost = ({ postid, likeCount, commentCount, file }) => (
+  <Container bg={file.url}>
+   <Link to={`/post/${postid}`}>
         <Overlay>
-            <Number>
-                <HeartFull />
-                <NumberText>{likeCount}</NumberText>
-            </Number>
-            <Number>
-                <CommentFull />
-                <NumberText>{commentCount}</NumberText>
-            </Number>
-        </Overlay>
-    </Container>)
-
+          <Number>
+            <HeartFull />
+            <NumberText>{likeCount}</NumberText>
+          </Number>
+      
+          <Number>
+            <CommentFull />
+            <NumberText>{commentCount}</NumberText>
+          </Number>
+      </Overlay>
+      </Link>
+  </Container>
+);
 
 SquarePost.propTypes = {
+    postid:PropTypes.string.isRequired,
     likeCount: PropTypes.number.isRequired,
     commentCount: PropTypes.number.isRequired,
-    files: PropTypes.shape({
-        id: PropTypes.string,
-        url: PropTypes.string.isRequired
-    }).isRequired
+    file: PropTypes.shape({
+            url: PropTypes.string.isRequired
+        }).isRequired
 };
+
 export default SquarePost;

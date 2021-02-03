@@ -3,9 +3,10 @@ import styled from "styled-components";
 import { Link, withRouter } from "react-router-dom";
 import Input from "./Input";
 import useInput from "../Hooks/useInput";
-import { Compass, HeartEmpty, Logo, User } from "./Icons";
+import { Compass, HeartEmpty, User, Logo } from "./Icons";
 import { useQuery } from "react-apollo-hooks";
-import { ME } from "../SharedQueries";
+import { ME, GET_TODAYINFO } from "../SharedQueries";
+import EnventInfoContainer from "../Components/EventInfo";
 
 const Header = styled.header`
   width: 100%;
@@ -20,7 +21,7 @@ const Header = styled.header`
   justify-content: center;
   align-items: center;
   padding: 10px 0px;
-  z-index:2;
+  z-index: 2;
 `;
 
 const HeaderWrapper = styled.div`
@@ -66,22 +67,35 @@ const HeaderLink = styled(Link)`
 export default withRouter(({ history }) => {
   const search = useInput("");
   const { data } = useQuery(ME);
-  console.log(data);
   const onSearchSubmit = e => {
     e.preventDefault();
-    history.push(`/search?term=${search.value}`)
-  }
+    history.push(`/search?term=${search.value}`);
+  };
+  
+ const { data:todayData } = useQuery(GET_TODAYINFO, {
+      variables: {
+          location: "incheon",
+          latitude: 37.4111,
+          longitude: 126.7111
+        }
+ });
+  
   return (
     <Header>
       <HeaderWrapper>
         <HeaderColumn>
-          <Link to="/">
+          <Link to="/" style={{marginRight:30}}>
             <Logo />
           </Link>
+            {todayData && <EnventInfoContainer location={todayData.todayInfo.countryName} data={todayData.todayInfo.newCase} temp={todayData.todayInfo.temp} weather={todayData.todayInfo.weather} />}
         </HeaderColumn>
         <HeaderColumn>
           <form onSubmit={onSearchSubmit}>
-            <SearchInput value={search.value} placeholder="Search" onChange={search.onChange} />
+            <SearchInput
+              value={search.value}
+              onChange={search.onChange}
+              placeholder="Search"
+            />
           </form>
         </HeaderColumn>
         <HeaderColumn>
@@ -89,14 +103,15 @@ export default withRouter(({ history }) => {
             <Compass />
           </HeaderLink>
           <HeaderLink to="/notifications">
-            <HeartEmpty />
+            {/* <Ionicons name="notifications-outline" size={24} color="black" /> */}
+             <HeartEmpty />
           </HeaderLink>
-          {!data ? <HeaderLink to="/#">
-            <User />
-          </HeaderLink> :
-            <HeaderLink to={data.me.user.username}>
+          {!data ? (<HeaderLink to="/#">
               <User />
-            </HeaderLink>
+            </HeaderLink>) : 
+            (<HeaderLink to={data.me.username}>
+              <User />
+            </HeaderLink>)
           }
         </HeaderColumn>
       </HeaderWrapper>

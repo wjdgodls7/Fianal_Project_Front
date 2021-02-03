@@ -4,16 +4,18 @@ import { gql } from "apollo-boost";
 import { useQuery } from "react-apollo-hooks";
 import Loader from "../Components/Loader";
 import Post from "../Components/Post";
+import { Helmet } from "rl-react-helmet";
 
-const FEED_QUERY = gql`
+export const FEED_QUERY = gql`
   {
     seeFeed {
+      state
       id
       location
       caption
       user {
         id
-        avatar
+        avatar 
         username
       }
       files {
@@ -23,6 +25,7 @@ const FEED_QUERY = gql`
       likeCount
       isLiked
       comments {
+        isCommented
         id
         text
         user {
@@ -39,23 +42,31 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 65vh;
+  min-height: 60vh;
 `;
 
 export default () => {
-  const { data, loading } = useQuery(FEED_QUERY);
-  return <Wrapper>
-    {loading && <Loader />}
-    {!loading && data && data.seeFeed && data.seeFeed.map(
-      post => <Post
-        key={post.id}
-        id={post.id}
-        user={post.user}
-        files={post.files}
-        likeCount={post.likeCount}
-        isLiked={post.isLiked}
-        comments={post.comments}
-        createdAt={post.createdAt}
-        caption={post.caption}
-      />)}</Wrapper>;
+    const { data, loading } = useQuery(FEED_QUERY);
+    return (
+        <Wrapper>
+            {loading && <Loader />}
+            {!loading && data && data.seeFeed && data.seeFeed.map(post => 
+            {
+              if (post.state === "1") {
+                return <Post key={post.id}
+              id={post.id}
+                  user={post.user}
+                  location={post.location}
+              files={post.files}
+              likeCount={post.likeCount}
+              caption={post.caption}
+              avatar={post.user.avatar}
+              isLiked={post.isLiked}
+              comments={post.comments}
+              createdAt={post.createdAt}
+            />}}
+            
+          
+        )}
+        </Wrapper>);
 };

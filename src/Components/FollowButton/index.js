@@ -1,3 +1,2 @@
-import FollowButtonContainer from './FollowButtonContainer'
-
+import FollowButtonContainer from "./FollowButtonContainer";
 export default FollowButtonContainer;

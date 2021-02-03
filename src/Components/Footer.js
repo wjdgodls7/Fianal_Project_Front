@@ -5,8 +5,7 @@ const Footer = styled.footer`
     text-transform: uppercase;
     font-weight: 600;
     font-size: 12px;
-    margin-top : 50px;
-    
+    margin-top:50px;
 `;
 
 const List = styled.ul`
@@ -14,6 +13,7 @@ const List = styled.ul`
     align-items: center;
     justify-content: center;
     padding-bottom : 20px;
+    padding-top : 50px;
 
 `;
 
