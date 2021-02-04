@@ -86,7 +86,7 @@ mutation confirmUser($email:String!, $password : String!){
 `
 
 export const CHECK_EMAIL = gql`
-query checkemail($email:String!){
+mutation checkemail($email:String!){
   checkemail(email:$email)
 }
 `

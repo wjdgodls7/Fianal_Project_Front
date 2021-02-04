@@ -18,7 +18,8 @@ const PostContainer = ({
   createdAt,
   caption,
   location,
-  avatar
+  avatar,
+  hash
 }) => {
   const [isLikedS, setIsLiked] = useState(isLiked);
   const [likeCountS, setLikeCount] = useState(likeCount);
@@ -29,7 +30,7 @@ const PostContainer = ({
   });
   const [selfComments, setSelfComments] = useState([]);
   const [addCommentMutation] = useMutation(ADD_COMMENT, {
-    variables: { postId: id, text: comment.value }, refetchQueries: [{query:FEED_QUERY}]
+    variables: { postId: id, text: comment.value }, refetchQueries: [{ query: FEED_QUERY }]
   });
   const slide = () => {
     const totalFiles = files.length;
@@ -70,6 +71,7 @@ const PostContainer = ({
   };
   return (
     <PostPresenter
+      hash={hash}
       id={id}
       user={user}
       files={files}
@@ -92,6 +94,7 @@ const PostContainer = ({
 };
 
 PostContainer.propTypes = {
+  hash: PropTypes.string,
   id: PropTypes.string.isRequired,
   user: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -108,7 +111,7 @@ PostContainer.propTypes = {
   isLiked: PropTypes.bool.isRequired,
   comments: PropTypes.arrayOf(
     PropTypes.shape({
-      isCommented:PropTypes.bool.isRequired,
+      isCommented: PropTypes.bool.isRequired,
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       user: PropTypes.shape({

@@ -4,7 +4,6 @@ import { withRouter } from "react-router-dom";
 import { useQuery } from "react-apollo-hooks";
 import DetailPostPresenter from "./DetailPostPresenter";
 
-
 const SEE_FULL_POST = gql`
   query seeFullPost($id: String!) {
     seeFullPost(id: $id) {
@@ -37,5 +36,5 @@ const SEE_FULL_POST = gql`
 
 export default withRouter(({ match: { params: { id } } }) => {
   const { data, loading } = useQuery(SEE_FULL_POST, { variables: { id } });
-    return <DetailPostPresenter loading={loading} data={data} />;
+  return <DetailPostPresenter loading={loading} data={data} />;
 });

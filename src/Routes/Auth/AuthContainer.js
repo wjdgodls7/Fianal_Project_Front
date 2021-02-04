@@ -106,7 +106,7 @@
 import React, { useState } from "react";
 import AuthPresenter from "./AuthPresenter";
 import useInput from "../../Hooks/useInput";
-import { useMutation, useQuery } from "react-apollo-hooks";
+import { useMutation } from "react-apollo-hooks";
 import { LOG_IN, CREATE_ACCOUNT, CONFIRM_SECRET, LOG_USER_IN, CONFIRM_USER, CHECK_EMAIL } from "./AuthQueries";
 import { toast } from "react-toastify";
 
@@ -168,18 +168,19 @@ export default () => {
 
   const [logUserInMutation] = useMutation(LOG_USER_IN);
 
-  const checkemailQuery = useQuery(CHECK_EMAIL, {
+  const [checkemailQuery] = useMutation(CHECK_EMAIL, {
     variables: {
       email: email.value
     }
   });
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (action === "logIn") {
       if (email.value !== "") {
         try {
-          const { data: { checkemail } } = await checkemailQuery;
+          const { data: { checkemail } } = await checkemailQuery();
+          console.log(checkemail)
           if (!checkemail) {
             toast.error("Woops!, 등록된 정보가 없어요! 회원가입으로 안내해 드릴게요!");
             setTimeout(() => setAction("signUp1"), 3000);
@@ -213,6 +214,7 @@ export default () => {
       if (email.value !== "") {
         try {
           const { data: { requestSecret } } = await requestSecretMutation();
+          console.log(requestSecret);
           if (!requestSecret) {
             toast.error("다시 시도 해주세요/ 이메일이 중복되었습니다")
           } else {

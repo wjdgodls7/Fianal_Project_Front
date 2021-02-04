@@ -23,19 +23,6 @@ body {
   border: 1px solid #d6d8da;
   border-radius: 6px;
 }
-.tags-input:focus-within {
-  border: 1px solid #0052cc;
-}
-.tags-input input {
-  flex: 1;
-  border: none;
-  height: 46px;
-  font-size: 14px;
-  padding: 4px 0 0 0;
-}
-.tags-input input:focus {
-  outline: transparent;
-}
 
 #tags {
   display: flex;
@@ -56,28 +43,18 @@ body {
   list-style: none;
   border-radius: 6px;
   margin: 0 8px 8px 0;
-  background: #0052cc;
+  background: white;
   cursor: pointer;
 }
 .tag .tag-title {
   margin-top: 3px;
-}
-.tag .tag-close-icon {
-  display: block;
-  width: 12px;
-  height: 40%;
-  line-height: 110%;
-  text-align: center;
-  font-size: 14px;
-  margin-right: 8px;
   color: #0052cc;
-  border-radius: 50%;
-  background: #fff;
-  cursor: pointer;
+  text-decoration: underline;
+  font-weight:bolder;
 }
 
-@media screen and (max-width: 567px) {
+/* @media screen and (max-width: 567px) {
   .tags-input {
     width: calc(100vw - 32px);
   }
-}
+} */
