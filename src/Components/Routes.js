@@ -8,7 +8,6 @@ import Explore from "../Routes/Explore";
 import Search from "../Routes/Search";
 import DetailPost from "../Routes/DetailPost/index";
 
-
 const LoggedInRoutes = () => (
   <Switch>
     <Route exact path="/" component={Feed} />

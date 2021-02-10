@@ -8,7 +8,10 @@ import Post from "../Components/Post";
 export const FEED_QUERY = gql`
   {
     seeFeed {
-      hash
+      hashes{
+        tag
+        id
+      }
       state
       id
       location
@@ -63,7 +66,7 @@ export default () => {
             isLiked={post.isLiked}
             comments={post.comments}
             createdAt={post.createdAt}
-            hash={post.hash}
+            hashes={post.hashes}
           />
         }
       }

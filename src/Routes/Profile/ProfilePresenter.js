@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Popup from 'reactjs-popup';
 import styled from "styled-components";
 import { Helmet } from "rl-react-helmet";
 import Loader from "../../Components/Loader";
@@ -7,11 +8,10 @@ import FatText from "../../Components/FatText";
 import FollowButton from "../../Components/FollowButton";
 import SquarePost from "../../Components/SquarePost";
 import Button from "../../Components/Button";
-import { Link } from "react-router-dom";
-import Popup from 'reactjs-popup'; 
-import EditProfile from "./EditProfile";
+import { ME } from "../../SharedQueries";
 import { Setting } from "../../Components/Icons";
 import "../../Styles/PopUp.css";
+import { useQuery } from "react-apollo-hooks";
 
 const Users = styled.ul`
   margin-top:10px;
@@ -47,6 +47,11 @@ align-items: right;
 text-align:right;
 margin-left:auto;
  `;
+
+const Text2 = styled.div`
+justify-content: center;
+text-align: center;
+`;
 
 const UsernameRow = styled.div`
   display: flex;
@@ -109,99 +114,109 @@ const Posts = styled.div`
   grid-auto-rows: 200px;
 `;
 
-export default ({ loading, data, logOut }) => {
-    if (loading === true) {
-        return (
-            <Wrapper>
-                <Loader />
-            </Wrapper>
-        );
-    } else if (!loading && data && data.seeUser) {
+export default ({ loading, data, logOut, refetch }) => {
+  if (loading === true) {
+    return (
+      <Wrapper>
+        <Loader />
+      </Wrapper>
+    );
+  } else if (!loading) {
+    const { data: { me } } = useQuery(ME);
+    useEffect(() => { return refetch(); }, [])
     const [editProfile, setEditProfile] = useState(false);
-      
-      const editClick = (e) => {
+    const editClick = (e) => {
       setEditProfile(e => !e)
     }
-        const {
-            seeUser: {
-              id,
-              avatar,
-              firstName,
-              lastName,
-              isFollowing,
-              isSelf,
-            bio,
-            followers,
-              following,
-              followingCount,
-              followersCount,
-              postsCount,
-              posts,
-              username
-            }
-      } = data;
-
-      const [userInfo, setUserInfo] = useState({
+    const {
+      seeUser: {
+        id,
+        avatar,
+        firstName,
+        lastName,
+        isFollowing,
+        isFollowers,
+        isSelf,
+        bio,
+        followers,
+        following,
+        followingCount,
+        followersCount,
+        postsCount,
+        posts,
         username,
+        state
+      }
+    } = data;
+
+    const [userInfo, setUserInfo] = useState({
+      username,
       avatar,
       firstName,
       lastName,
       bio,
-      });
-      // !editProfile ?
-      //   (
-      return (<Wrapper>
-          <Helmet>
-            <title>{username} | Semicolon</title>
-          </Helmet>
-          <Header>
-            <HeaderColumn>
-              <Avatar size="lg" url={avatar} />
-            </HeaderColumn>
-            <HeaderColumn>
-              <UsernameRow>
-                <NameDiv>
-                  <Username>{userInfo.username}</Username>{" "}
-                </NameDiv>
-                <IconDiv>
-                  <Button1 onClick={() => { editClick() }} >
-                    <Setting />
-                  </Button1>
-                </IconDiv>
+    });
+    console.log(username, isFollowing, state, me.username, isFollowers)
+    // !editProfile ?
+    //   (
+    return (<Wrapper>
+      <Helmet>
+        <title>{username} | Semicolon</title>
+      </Helmet>
+      <Header>
+        <HeaderColumn>
+          <Avatar size="lg" url={avatar} />
+        </HeaderColumn>
+        <HeaderColumn>
+          <UsernameRow>
+            <NameDiv>
+              <Username>{userInfo.username}</Username>{" "}
+            </NameDiv>
+            <IconDiv>
+              <Button1 onClick={() => { editClick() }} >
+                <Setting />
+              </Button1>
+            </IconDiv>
 
-              </UsernameRow>
-              <Counts>
-                <Count>
-                  <FatText text={String(postsCount)} /> <UserDetail>posts</UserDetail>
-                </Count>
-                <Count>
-                  <FatText text={String(followersCount)} /> {FollowerPopUp(followers)}
-                </Count>
-                <Count>
-                  <FatText text={String(followingCount)} /> {FollowingPopUp(following)}
-                </Count>
+          </UsernameRow>
+          <Counts>
+            <Count>
+              <FatText text={String(postsCount)} /> <UserDetail>posts</UserDetail>
+            </Count>
+            <Count>
+              <FatText text={String(followersCount)} /> {FollowerPopUp(followers)}
+            </Count>
+            <Count>
+              <FatText text={String(followingCount)} /> {FollowingPopUp(following)}
+            </Count>
 
-              </Counts>
-              <FullName text={userInfo.firstName + userInfo.lastName} />
-              <Bio>{userInfo.bio}</Bio>
-              {isSelf ? <Button onClick={logOut} text="Log Out" /> : <FollowButton isFollowing={isFollowing} id={id} />}
-            </HeaderColumn>
-          </Header>
-          <Posts>
-            {posts && posts.map(post => {
-              if (post.state === "1") {
-                return <SquarePost
-                  key={post.id}
-                  postid={post.id}
-                  likeCount={post.likeCount}
-                  commentCount={post.commentCount}
-                  file={post.files[0]}
-                />
-              }
-            })}
-          </Posts>
-        </Wrapper>
-        );
+          </Counts>
+          <FullName text={userInfo.firstName + userInfo.lastName} />
+          <Bio>{userInfo.bio}</Bio>
+          {isSelf ? <Button onClick={logOut} text="Log Out" /> : <FollowButton isFollowing={isFollowing} id={id} />}
+        </HeaderColumn>
+      </Header>
+      {username === me.username || state === "1" || (state === "2" && isFollowing) ? (<Posts>
+        {posts && posts.map(post => {
+          if (post.state === "1") {
+            return <SquarePost
+              key={post.id}
+              postid={post.id}
+              likeCount={post.likeCount}
+              commentCount={post.commentCount}
+              file={post.files[0]}
+            />
+          }
+        })}
+      </Posts>) :
+        <Text2>
+          <FatText text="비공개 계정입니다."></FatText>
+        </Text2>
+      }
+
+    </Wrapper>
+    );
+
   }
   return null;
 };
@@ -210,7 +225,7 @@ export default ({ loading, data, logOut }) => {
 
 const FollowerPopUp = (followers) => {
   const ref = useRef();
-  
+
   return (
     <div>
       <Popup
@@ -223,21 +238,21 @@ const FollowerPopUp = (followers) => {
         }
       >
         <div width="30%">
-        {followers && (
-          <Users>
-            {followers.map(follower => (
-              <User key={follower.id}>
-                <Avatar url={follower.avatar} />
-                <UserDetail>
-                  <FatText text={follower.username} />
-                  <FullNameF>{follower.fullName}</FullNameF>
-                </UserDetail>
-                <Div> <FollowButton isFollowing={follower.isFollowing} id={follower.id}/></Div>
-              </User>
-            ))}
-          </Users>
+          {followers && (
+            <Users>
+              {followers.map(follower => (
+                <User key={follower.id}>
+                  <Avatar url={follower.avatar} />
+                  <UserDetail>
+                    <FatText text={follower.username} />
+                    <FullNameF>{follower.fullName}</FullNameF>
+                  </UserDetail>
+                  <Div> <FollowButton isFollowing={follower.isFollowing} id={follower.id} /></Div>
+                </User>
+              ))}
+            </Users>
           )}
-          </div>
+        </div>
       </Popup>
     </div>
   );
@@ -245,7 +260,7 @@ const FollowerPopUp = (followers) => {
 
 const FollowingPopUp = (following) => {
   const ref = useRef();
-  
+
   return (
     <div>
       <Popup
@@ -263,11 +278,11 @@ const FollowingPopUp = (following) => {
               <User key={following.id}>
                 <Avatar url={following.avatar} />
                 <UserDetail>
-                <FatText text={following.username} />
+                  <FatText text={following.username} />
                   <FullNameF>{following.fullName}</FullNameF>
-                  </UserDetail>
-                <Div><FollowButton isFollowing={following.isFollowing} id={following.id}/></Div>
-              
+                </UserDetail>
+                <Div><FollowButton isFollowing={following.isFollowing} id={following.id} /></Div>
+
               </User>
             ))}
           </Users>

@@ -19,7 +19,7 @@ const PostContainer = ({
   caption,
   location,
   avatar,
-  hash
+  hashes
 }) => {
   const [isLikedS, setIsLiked] = useState(isLiked);
   const [likeCountS, setLikeCount] = useState(likeCount);
@@ -71,7 +71,7 @@ const PostContainer = ({
   };
   return (
     <PostPresenter
-      hash={hash}
+      hashes={hashes}
       id={id}
       user={user}
       files={files}
@@ -94,7 +94,12 @@ const PostContainer = ({
 };
 
 PostContainer.propTypes = {
-  hash: PropTypes.string,
+  hashes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      tag: PropTypes.string.isRequired
+    })
+  ).isRequired,
   id: PropTypes.string.isRequired,
   user: PropTypes.shape({
     id: PropTypes.string.isRequired,
