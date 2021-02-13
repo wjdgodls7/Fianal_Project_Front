@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Popup from 'reactjs-popup';
 import styled from "styled-components";
 import { Helmet } from "rl-react-helmet";
@@ -6,6 +6,7 @@ import Loader from "../../Components/Loader";
 import Avatar from "../../Components/Avatar";
 import FatText from "../../Components/FatText";
 import FollowButton from "../../Components/FollowButton";
+import StateButton from '../../Components/StateButton';
 import SquarePost from "../../Components/SquarePost";
 import Button from "../../Components/Button";
 import { ME } from "../../SharedQueries";
@@ -114,7 +115,7 @@ const Posts = styled.div`
   grid-auto-rows: 200px;
 `;
 
-export default ({ loading, data, logOut, refetch }) => {
+export default ({ loading, data, logOut, changeClick }) => {
   if (loading === true) {
     return (
       <Wrapper>
@@ -123,7 +124,7 @@ export default ({ loading, data, logOut, refetch }) => {
     );
   } else if (!loading) {
     const { data: { me } } = useQuery(ME);
-    useEffect(() => { return refetch(); }, [])
+    // useEffect(() => { return refetch(); }, [])
     const [editProfile, setEditProfile] = useState(false);
     const editClick = (e) => {
       setEditProfile(e => !e)
@@ -194,6 +195,7 @@ export default ({ loading, data, logOut, refetch }) => {
           <FullName text={userInfo.firstName + userInfo.lastName} />
           <Bio>{userInfo.bio}</Bio>
           {isSelf ? <Button onClick={logOut} text="Log Out" /> : <FollowButton isFollowing={isFollowing} id={id} />}
+          {isSelf ? <StateButton state={state} /> : null}
         </HeaderColumn>
       </Header>
       {username === me.username || state === "1" || (state === "2" && isFollowing) ? (<Posts>

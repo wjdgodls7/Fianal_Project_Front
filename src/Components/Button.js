@@ -13,6 +13,7 @@ const Container = styled.button`
   text-align: center;
   padding: 7px 0px;
   font-size: 14px;
+  margin-bottom:5px;
   cursor:pointer;
 `;
 

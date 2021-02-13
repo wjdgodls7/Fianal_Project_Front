@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import { useMutation, useQuery } from "react-apollo-hooks";
 import ProfilePresenter from "./ProfilePresenter";
 import { ME } from "../../SharedQueries";
+import { useState } from "react";
 
 const GET_USER = gql`
   query seeUser($username: String!) {
@@ -57,6 +58,13 @@ export const LOG_OUT = gql`
 export default withRouter(({ match: { params: { username } } }) => {
   const { data, loading, refetch } = useQuery(GET_USER, { variables: { username } });
   const [logOut] = useMutation(LOG_OUT);
-
-  return <ProfilePresenter loading={loading} logOut={logOut} data={data} refetch={refetch} />;
+  const [change, setChange] = useState("전체공개");
+  const changeClick = (change) => {
+    if (change === "전체공개") {
+      setChange("친구만 공개");
+    } else {
+      setChange("전체공개");
+    }
+  }
+  return <ProfilePresenter loading={loading} logOut={logOut} data={data} refetch={refetch} changeClick={changeClick} />;
 });

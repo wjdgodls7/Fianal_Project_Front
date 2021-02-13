@@ -90,7 +90,7 @@ const EDIT_USER = gql`
   }`
 
 export default ({ data, setUserInfo, setEditProfile, userInfo }) => {
-    console.log("eede")
+  console.log("eede")
   const username = useInput(userInfo.username);
   const firstName = useInput(userInfo.firstName);
   const lastName = useInput(userInfo.lastName);
@@ -116,8 +116,8 @@ export default ({ data, setUserInfo, setEditProfile, userInfo }) => {
     const { data } = await editUserMutation();
     setEditProfile(false);
   }
-    return (
-      <Text>deeg</Text>
+  return (
+    <Text>deeg</Text>
     // <WhiteBox>
     //   <Avaterm size="md" url={data.avatar} />
     //   <Inputs>
